@@ -6,7 +6,7 @@ namespace Intro
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Code Arsenal");
+            Console.WriteLine("Code Arsenal - Arctic Intro");
         }
     }
 }
