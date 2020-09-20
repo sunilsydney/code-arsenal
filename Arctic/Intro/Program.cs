@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Intro
+namespace Arctic.Intro
 {
     class Program
     {

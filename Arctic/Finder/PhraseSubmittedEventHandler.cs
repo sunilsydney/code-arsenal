@@ -7,7 +7,7 @@ using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
-namespace Finder
+namespace Arctic.Finder
 {
     public static class PhraseSubmittedEventHandler
     {
