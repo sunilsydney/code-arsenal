@@ -3,14 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Arctic.Events;
+using Arctic.Finder.Interfaces;
 using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 
 namespace Arctic.Finder
 {
-    public static class PhraseSubmittedEventHandler
+    public class PhraseSubmittedEventHandler
     {
+        ISuggestion _suggestionFetcher;
+        public PhraseSubmittedEventHandler(ISuggestion suggestion)
+        {
+            _suggestionFetcher = suggestion ?? throw new ArgumentNullException(nameof(suggestion));
+        }
+
         /// <summary>
         /// Uses default consumer group of Event Hub
         /// </summary>
@@ -18,7 +26,7 @@ namespace Arctic.Finder
         /// <param name="log"></param>
         /// <returns></returns>
         [FunctionName("PhraseSubmittedEventHandler")]
-        public static async Task Run([EventHubTrigger("phrase-submission", Connection = "EventHubsNameSpaceCS")]
+        public async Task Run([EventHubTrigger("phrase-submission", Connection = "EventHubsNameSpaceCS")]
             EventData[] events, ILogger log)
         {
             var exceptions = new List<Exception>();
@@ -28,10 +36,9 @@ namespace Arctic.Finder
                 try
                 {
                     string messageBody = Encoding.UTF8.GetString(eventData.Body.Array, eventData.Body.Offset, eventData.Body.Count);
-
-                    // Replace these two lines with your processing logic.
                     log.LogInformation($"C# Event Hub trigger function processed a message: {messageBody}");
-                    await Task.Yield();
+
+                    await Process(eventData);
                 }
                 catch (Exception e)
                 {
@@ -47,5 +54,17 @@ namespace Arctic.Finder
             if (exceptions.Count == 1)
                 throw exceptions.Single();
         }
+
+        public async Task Process(EventData eventData)
+        {
+            IConverter converter = new Converter();
+
+            PhraseSubmittedEvent phraseSubmittedEvent = converter.ToEvent<PhraseSubmittedEvent>(eventData);
+            var phrase = phraseSubmittedEvent.Phrase;
+
+            var suggestions = await _suggestionFetcher.GetSuggestions(phrase);
+        }
+
+
     }
 }
