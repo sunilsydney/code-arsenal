@@ -20,15 +20,19 @@ using System.Net;
 
 namespace IntegrationTest
 {
-    public class Poc
+    public class SuggestionFetcherTest
     {
         [Fact]
-        public async Task  FetchSuggestions()
+        public async Task  ShouldFetchSuggestionsFromGoogle()
         {
             ISuggestion obj = new SuggestionFetcher();
 
             var res = await obj.GetSuggestions("cars");
 
+            res.ShouldNotBeNull();
+            res.Count.ShouldBeGreaterThan(0);
+            res.First().ShouldNotBeNull();
+            res.First().ShouldNotBe("");
         }
     }
 }

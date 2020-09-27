@@ -35,13 +35,11 @@ namespace Arctic.Finder
                 }
                 catch (Exception e)
                 {
-                    // We need to keep processing the rest of the batch - capture this exception and continue.
-                    // Also, consider capturing details of the message that failed processing so it can be processed again later.
+                    // Need to keep processing the rest of the batch 
+                    // capture this exception and continue.
                     exceptions.Add(e);
                 }
             }
-
-            // Once processing of the batch is complete, if any messages in the batch failed processing throw an exception so that there is a record of the failure.
 
             if (exceptions.Count > 1)
                 throw new AggregateException(exceptions);
